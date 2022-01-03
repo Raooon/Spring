@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.web.board.dao.CommentsMapper">
+
+	<select id="find" resultType="com.yedam.web.board.dao.Comments">
+		select * 
+		from comments
+		where BOARD_NO = #{boardNo}
+	</select>
+		
+	<select id="findById" resultType="com.yedam.web.board.dao.Comments">
+		select *
+		from comments
+		where seq = #{seq}
+	</select>
+	
+	<insert id="insert">
+		<selectKey keyProperty="seq" resultType="string" order="BEFORE">
+			SELECT nvl(max(seq),0)+1 from comments
+		</selectKey>
+		insert into comments (seq,
+								name,
+								content,
+								board_no,
+								regdate)
+					values (#{seq},
+							#{name},
+							#{content},
+							#{boardNo},
+							sysdate)
+	</insert>
+	
+	<update id="update">
+		update comments 
+		set content=#{content}
+		where seq=#{seq}
+	</update>
+	
+	<!-- 게시글의 댓글 삭제 : 게시글에 의해서 댓글 전체 삭제-->
+	<delete id="deleteByBoard">
+		delete from comments
+		where Board_no = #{boardNo}
+	</delete>
+	
+	<!-- 댓글만 삭제 -->
+	<delete id="delete">
+	delete from comments where seq=#{seq}
+	</delete>
+</mapper>

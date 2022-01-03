@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.web.board.dao.BoardMapper">
+
+	<sql id="boardWhere">
+		<where>
+			<if test="keyword != null and keyword != ''">
+				<!-- <choose>
+					<when test="gubun == 'writer'"> writer like '%' || #{writer} || '%' </when>
+					<when test="gubun == 'contents'"> contents like '%' || #{contents} || '%' </when>
+					<when test="gubun == ''"> writer = #{writer} </when>
+				</choose> -->
+				${gubun} like '%' || #{keyword} || '%'
+				<!-- choose when 절을 한번에 표현할 수 있다. -->
+			</if>
+			<if test="from != null">
+				<![CDATA[ and trunc(wdate) >= #{from} ]]>
+			</if>
+			<if test="to != null">
+				<![CDATA[ and trunc(wdate) <= #{to} ]]>
+			</if>
+		</where>
+	</sql>
+	
+	<insert id="insert" parameterType="Board">
+		insert into board (no,title,contents,writer,wdate,reply_cnt)
+		values((select NVL(MAX(no),0)+1 from board),
+			   #{title},
+			   #{contents},
+			   #{writer},
+			   sysdate,
+			   0)
+	</insert>
+	
+	<select id="find" resultType="com.yedam.web.board.dao.Board">
+	select * from ( select a.*, rownum rn from  (
+		select * 
+		from board 
+		<include refid="boardWhere"></include>
+		order by no desc
+	)a) b
+	where rn between #{first} and #{last} 
+	</select>
+	
+	<select id="findById" resultType="com.yedam.web.board.dao.Board">
+		select * 
+		from board 
+		where no = #{value}
+	</select>
+	
+	<delete id="delete" parameterType="com.yedam.web.board.dao.Board">
+		delete from board where no = #{no}
+	</delete>
+	
+	<update id="update" parameterType="com.yedam.web.board.dao.Board">
+		update board set title = #{title}, 
+						contents = #{contents} 
+						where no = #{no}
+	</update>
+	
+	<select id="findTotal" resultType="int">
+		select count(*)
+		from board
+		<include refid="boardWhere"></include>
+	</select>
+	
+</mapper>
