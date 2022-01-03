@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.dept.dao.DeptMapper">
+	
+	<select id="find" 
+		resultType="map">
+		select department_id as "departmentId",
+			   department_name as "departmentName"
+		from departments
+	</select>
+	
+	<select id="findById" 
+		resultType="map"
+		parameterType="integer">
+		select department_id as "departmentId",
+			   department_name as "departmentName"
+		from departments 
+		where department_id = #{value}
+	</select>
+	
+	<select id="findByName" resultType="Department" 
+							parameterType="Department">
+		select * from departments 
+		where upper(department_name) like
+		 '%' || upper(#{departmentName}) || '%'
+	</select>
+	
+	<insert id="insert" parameterType="Department">
+		insert into departments(department_id, 
+								department_name)
+						values(#{departmentId}, 
+							   #{departmentName})
+	</insert>
+	
+</mapper>

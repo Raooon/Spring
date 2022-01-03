@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yedam.app.emp.dao.EmployeeMapper">
+
+	<select id="find" 
+			resultType="Employee"
+			parameterType="EmployeeSearch"> 
+		select * from 
+		employees 
+		<where>
+			<if test="departmentId != null and departmentId != ''">
+				 DEPARTMENT_ID = #{departmentId}
+			</if>
+			<if test="managerId != null and managerId != ''">
+				 AND MANAGER_ID = #{managerId}
+			</if>
+			<if test="employeeIds != null and employeeIds.size() > 0">
+				AND EMPLOYEE_ID in
+				<foreach collection="employeeIds" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+
+</mapper>
